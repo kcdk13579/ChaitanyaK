@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portfolio Payment | Chaitanya Kayala</title>
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <style>
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: #f9fafc;
+      color: #333;
+      text-align: center;
+      padding: 60px;
+    }
+    .container {
+      background: #fff;
+      max-width: 400px;
+      margin: auto;
+      padding: 40px;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #0077cc;
+      margin-bottom: 10px;
+    }
+    #payBtn {
+      background-color: #3399cc;
+      border: none;
+      color: white;
+      font-size: 16px;
+      padding: 12px 24px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+    #payBtn:hover {
+      background-color: #0077aa;
+    }
+    #status {
+      margin-top: 15px;
+      font-size: 14px;
+      color: #666;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>Access My Portfolio</h1>
+    <p>Pay ₹1 to unlock and view the portfolio for 10 minutes.</p>
+    <button id="payBtn">Pay Now</button>
+    <p id="status"></p>
+  </div>
+
+  <script>
+    const BACKEND = 'http://localhost:5500';
+    const RAZORPAY_KEY = 'rzp_test_RWqtiLLs48Sv8Z'; // ✅ your Razorpay test key
+
+    const payBtn = document.getElementById('payBtn');
+    const status = document.getElementById('status');
+
+    // Replace these values as needed
+    const userInfo = {
+      name: "Chaitanya Kayala",
+      email: "chaitanya@example.com",
+      phone: "9999999999",
+    };
+
+    payBtn.addEventListener('click', async () => {
+      try {
+        status.innerText = 'Creating order...';
+
+        // ✅ Create order in backend
+        const res = await fetch(BACKEND + '/api/payment/create-order', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ amount: 1 }) // ✅ backend expects "amount"
+        });
+
+        const data = await res.json();
+        if (!data.order) {
+          console.error('Backend response:', data);
+          alert('Order creation failed!');
+          status.innerText = 'Failed to create order';
+          return;
+        }
+
+        const { order } = data;
+        status.innerText = 'Opening payment window...';
+
+        // ✅ Razorpay options
+        const options = {
+          key: RAZORPAY_KEY,
+          amount: order.amount,
+          currency: order.currency,
+          name: 'Chaitanya Kayala',
+          description: '₹1 to view portfolio (10 minutes)',
+          order_id: order.id,
+          handler: async function (response) {
+            status.innerText = 'Verifying payment...';
+
+            // ✅ Send all required fields for verification
+            const verifyRes = await fetch(BACKEND + '/api/payment/verify', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+                name: userInfo.name,
+                email: userInfo.email,
+                phone: userInfo.phone
+              })
+            });
+
+            const verifyData = await verifyRes.json();
+            console.log('Verification response:', verifyData);
+
+            if (verifyData.ok) {
+              localStorage.setItem('accessData', JSON.stringify({
+                token: verifyData.token,
+                expiresAt: verifyData.expiresAt,
+              }));
+              status.innerText = '✅ Payment successful! Redirecting...';
+              setTimeout(() => {
+                window.location.href = 'portfolio.html';
+              }, 1500);
+            } else {
+              alert('❌ Payment verification failed!');
+              status.innerText = 'Verification failed!';
+            }
+          },
+          prefill: userInfo,
+          theme: { color: '#3399cc' }
+        };
+
+        const rzp = new Razorpay(options);
+        rzp.open();
+      } catch (err) {
+        console.error('Payment start error:', err);
+        alert('Failed to start payment');
+        status.innerText = 'Error occurred during payment';
+      }
+    });
+  </script>
+</body>
+</html>
