@@ -1,4 +1,5 @@
-const BACKEND = 'http://localhost:5500';
+const BACKEND = "https://chaitanyak.onrender.com/api";
+
 const token = localStorage.getItem('adminToken');
 const msg = document.getElementById('msg');
 

@@ -32,7 +32,7 @@ app.use(bodyParser.json({ verify: (req, res, buf) => { req.rawBody = buf } })); 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  origin: process.env.FRONTEND_URL || "https://frontend-2i7s448pp-chaitanyas-projects-2ff97aa2.vercel.app",
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true
 }));

@@ -1,4 +1,5 @@
-const BACKEND = 'http://localhost:5500';
+const BACKEND = "https://chaitanyak.onrender.com/api";
+
 
 document.getElementById('loginForm').addEventListener('submit', async (e) => {
   e.preventDefault();
