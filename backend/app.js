@@ -28,14 +28,14 @@ app.use(cookieParser());
 
 // CORS
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  origin: process.env.FRONTEND_URL || 'https://frontend-2i7s448pp-chaitanyas-projects-2ff97aa2.vercel.app/',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true
 }));
 
 // Rate limiter
 const limiter = rateLimit({
-  windowMs: 60 * 1000, // 1 minute
+  windowMs: 60 * 1000, // 10 minutes
   max: 60
 });
 app.use(limiter);

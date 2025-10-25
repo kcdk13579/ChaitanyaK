@@ -21,28 +21,33 @@ const webhookRoutes = require('./routes/webhook');
 const app = express();
 
 // ==========================
-// Global Security Middleware
+// Security Middleware
 // ==========================
 app.use(helmet({
-  contentSecurityPolicy: false, // allows inline scripts in admin-login.html
+  contentSecurityPolicy: false,
 }));
 
 app.use(morgan('dev'));
-app.use(bodyParser.json({ verify: (req, res, buf) => { req.rawBody = buf } })); // Razorpay webhook verification
+app.use(bodyParser.json({ verify: (req, res, buf) => { req.rawBody = buf } }));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
+
+// ✅ Allow frontend from Vercel + localhost
 app.use(cors({
-  origin: process.env.FRONTEND_URL || "https://frontend-2i7s448pp-chaitanyas-projects-2ff97aa2.vercel.app",
+  origin: [
+    "https://frontend-2i7s448pp-chaitanyas-projects-2ff97aa2.vercel.app",
+    "http://localhost:3000"
+  ],
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true
 }));
 
 // ==========================
-// Rate Limiting (Security)
+// Rate Limiting
 // ==========================
 app.use(rateLimit({
-  windowMs: 60 * 1000, // 1 minute
-  max: 60,             // 60 requests/minute per IP
+  windowMs: 60 * 1000,
+  max: 60,
   message: 'Too many requests, please try again later.'
 }));
 
