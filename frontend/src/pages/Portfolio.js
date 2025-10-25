@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-const API = process.env.REACT_APP_API_URL || "https://chaitanyak.onrender.com/api";
+const API = process.env.REACT_APP_API_URL || "https://chaitanyak.onrender.com";
 
 export default function Portfolio(){
   const [allowed, setAllowed] = useState(false);

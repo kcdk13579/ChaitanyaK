@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const API = "https://chaitanyak.onrender.com/api";// backend URL
+const API = "https://chaitanyak.onrender.com";// backend URL
 
 export default function Payment() {
   const [form, setForm] = useState({ name: '', email: '', phone: '' });

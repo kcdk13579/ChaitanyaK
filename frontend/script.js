@@ -1,4 +1,4 @@
-const BACKEND = 'http://localhost:5500';
+const BACKEND = 'https://chaitanyak.onrender.com';
 const RAZORPAY_KEY =rzp_test_RWqtiLLs48Sv8Z; // replace with your test key id
 
 document.getElementById('payBtn').addEventListener('click', async () => {
